@@ -1,0 +1,23 @@
+{
+    "start_message": "Bienvenue dans le bot!",
+    "choose_girl": "Choisissez une fille",
+    "instruction": "Instruction",
+    "subscribe": "Abonnez-vous",
+    "my_subscription": "Mon abonnement",
+    "subscription_info": "Les détails de votre abonnement:",
+    "no_subscription": "Vous n'avez pas d'abonnement actif.",
+    "instruction_text": "Cliquez sur 'Choisissez une fille', choisissez une ville et un district où cela vous convient",
+    "instruction_details": "Choisissez une fille, sous sa photo il y aura un numéro de téléphone (SMS ou Zalo) auquel vous devrez écrire, date, heure et durée",
+    "instruction_payment": "Vous recevrez le nom de l'hôtel et de la chambre où la fille que vous avez choisie vous attendra",
+    "instruction_payment_after": "Paiement après. Profitez!",
+    "unknown_command": "Désolé, je ne comprends pas cette commande.",
+    "subscribe_info": "Options d'abonnement:",
+    "subscription_options": "Choisissez votre plan d'abonnement:",
+    "payment_confirmation": "Votre paiement a été confirmé.",
+    "paid_date": "Date de paiement:",
+    "expiry_date": "Date d'expiration:",
+    "expired_subscription": "Votre abonnement a expiré. Veuillez le renouveler pour continuer à utiliser le service.",
+    "forever_subscription": "Vous avez un abonnement à vie. Merci pour votre soutien!",
+    "menu_text": "Sélectionnez une option:",
+    "contact_support": "Contacter le support"
+}
