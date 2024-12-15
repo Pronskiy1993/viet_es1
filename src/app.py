@@ -37,17 +37,28 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# Функция для создания таблицы подписок
-def create_database():
+# Функция для создания или обновления таблицы базы данных
+def create_or_update_database():
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Создаем таблицу, если её нет
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS subscriptions (
         user_id INTEGER PRIMARY KEY,
         paid_date TEXT,
-        expiry_date TEXT
+        expiry_date TEXT,
+        free_used BOOLEAN DEFAULT 0
     )
     """)
+
+    # Проверяем, есть ли столбец free_used
+    try:
+        cursor.execute("ALTER TABLE subscriptions ADD COLUMN free_used BOOLEAN DEFAULT 0")
+    except sqlite3.OperationalError as e:
+        if "duplicate column name" not in str(e).lower():
+            raise
+
     conn.commit()
     conn.close()
 
@@ -65,9 +76,9 @@ def update_subscription(user_id, paid_date, expiry_date):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-    INSERT OR REPLACE INTO subscriptions (user_id, paid_date, expiry_date)
-    VALUES (?, ?, ?)
-    """, (user_id, paid_date, expiry_date))
+    INSERT OR REPLACE INTO subscriptions (user_id, paid_date, expiry_date, free_used)
+    VALUES (?, ?, ?, COALESCE((SELECT free_used FROM subscriptions WHERE user_id = ?), 0))
+    """, (user_id, paid_date, expiry_date, user_id))
     conn.commit()
     conn.close()
 
@@ -183,6 +194,7 @@ sub_kb = [
     [InlineKeyboardButton(text='7 Days: 400K VND', callback_data='sub7days')],
     [InlineKeyboardButton(text='1 Month: 1M VND', callback_data='sub1month')],
     [InlineKeyboardButton(text='FOREVER: 10M VND', callback_data='subForever')],
+    [InlineKeyboardButton(text='Free Plan: 1 Day (FREE)', callback_data='free_plan')],
 ]
 sub_keyboard = InlineKeyboardMarkup(inline_keyboard=sub_kb)
 
@@ -192,7 +204,21 @@ async def subscription_handler(callback_query: types.CallbackQuery, state: FSMCo
     user_id = callback_query.from_user.id
     today = datetime.now().strftime('%Y-%m-%d')
 
-    if data == "sub1day":
+    subscription = get_subscription(user_id)
+
+    if data == "free_plan":
+        if subscription and subscription["free_used"]:
+            await callback_query.answer("You have already used the free plan.")
+        else:
+            expiry_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+            update_subscription(user_id, today, expiry_date)
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("UPDATE subscriptions SET free_used = 1 WHERE user_id = ?", (user_id,))
+            conn.commit()
+            conn.close()
+            await callback_query.answer("You have activated the free plan for 1 day.")
+    elif data == "sub1day":
         expiry_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
         update_subscription(user_id, today, expiry_date)
         await callback_query.answer("You have selected a 1-day subscription for 100K VND.")
@@ -213,7 +239,7 @@ async def subscription_handler(callback_query: types.CallbackQuery, state: FSMCo
 
 # --- Главная функция для запуска бота ---
 async def main():
-    create_database()
+    create_or_update_database()
     await bot.set_my_commands([{"command": "/start", "description": "Start the bot"}])
     dp.include_router(user_private_router)
     await dp.start_polling(bot)
@@ -223,4 +249,6 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("Bot stopped.")
+
+
 
