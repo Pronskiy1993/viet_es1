@@ -1,2 +1,5 @@
 /src/common/__init__.py
 /venv/
+.idea/
+__pycache__/
+/.venv/
