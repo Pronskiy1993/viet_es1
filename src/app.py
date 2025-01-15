@@ -15,7 +15,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from common.keyboards import language_kb, create_main_menu, sub_keyboard # Импорт клавиатур
-from common.database import create_or_update_database, get_subscription, update_subscription  # Импорт работы с БД
+from common.database import create_or_update_database, get_subscription, update_subscription, add_or_update_user  # Импорт работы с БД
 # Импорт работы с БД
 
 # --- Загружаем переменные окружения ---
@@ -51,6 +51,8 @@ async def start(message: types.Message, state: FSMContext):
         "❗ All information is confidential and private for you.\n"
         "🌶️ We make life easier."
     )
+    add_or_update_user(message.from_user.id)
+    print('add user')
     await state.set_state(BotStates.choosing_language)
     await message.answer(start_text, reply_markup=language_kb)
 
@@ -114,7 +116,7 @@ async def subscription_handler(callback_query: types.CallbackQuery, state: FSMCo
     pass
 
 async def main():
-    create_or_update_database()
+    # create_or_update_database()
     await bot.set_my_commands([{"command": "/start", "description": "Start the bot"}])
     dp.include_router(user_private_router)
     await dp.start_polling(bot)

@@ -50,3 +50,30 @@ def update_subscription(user_id, paid_date, expiry_date):
     """, (user_id, paid_date, expiry_date, user_id))
     conn.commit()
     conn.close()
+
+
+def add_or_update_user(user_id):
+    """
+    Добавляет нового пользователя, если он еще не существует.
+
+    :param user_id: ID пользователя в Telegram
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Проверяем, существует ли пользователь
+    cursor.execute("SELECT * FROM subscriptions WHERE user_id = ?", (user_id,))
+    user = cursor.fetchone()
+
+    if not user:
+        # Пользователь не существует, создаем запись
+        cursor.execute(
+            """
+            INSERT INTO subscriptions (user_id)
+            VALUES (?)
+            """,
+            (user_id,)
+        )
+
+    conn.commit()
+    conn.close()

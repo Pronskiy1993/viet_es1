@@ -4,7 +4,8 @@ from aiogram import F, types, Router
 from aiogram.filters import CommandStart, Command
 from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
-from src.common.keyboards import start_kb, sub_keyboard
+from src.common.keyboards import sub_keyboard
+from src.common.database import create_or_update_database
 
 user_private_router = Router()
 
@@ -12,7 +13,7 @@ user_private_router = Router()
 @user_private_router.message(CommandStart())
 async def start(message: types.Message):
     start_text = '🔥 Hello! I am a bot that helps find a prostitute in any city in Vietnam.\n❗ All information is confidential and private for you.\n🌶️ We make life easier.'
-
+    print('add user')
     print('bot started')
     await message.answer(start_text, reply_markup=start_kb)
 
