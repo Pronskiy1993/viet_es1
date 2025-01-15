@@ -1,41 +1,42 @@
-from aiogram.types import Message, URLInputFile, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, \
-    KeyboardButton, ReplyKeyboardRemove
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types.web_app_info import WebAppInfo
-from aiogram import types
 
-# --- Start Menu ---
-start_kb = ReplyKeyboardMarkup(
+# Клавиатура выбора языка
+language_kb = ReplyKeyboardMarkup(
     keyboard=[
-        [
-            KeyboardButton(text="Сhoose a girl", web_app=WebAppInfo(url='https://gaigu26.tv/gai-goi')),
-        ],
-        [
-            KeyboardButton(text="Instruction"),
-            KeyboardButton(text="Subscribe", callback_data="subscribe")
-        ],
+        [KeyboardButton(text="English")],
+        [KeyboardButton(text="Français")],
     ],
     resize_keyboard=True,
-    # input_field_placeholder='What?'
 )
 
-# --- Delete Keyboard ---
+# Функция для создания клавиатуры основного меню
+def create_main_menu(locale):
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(
+                    text=locale.get("choose_girl", "Choose a girl"),
+                    web_app=WebAppInfo(url='https://gaigu26.tv/gai-goi')
+                )
+            ],
+            [
+                KeyboardButton(text=locale.get("instruction", "Instruction")),
+                KeyboardButton(text=locale.get("subscribe", "Subscribe"))
+            ],
+            [
+                KeyboardButton(text=locale.get("my_subscription", "My Subscription"))  # Новая кнопка
+            ],
+        ],
+        resize_keyboard=True,
+    )
 
-del_kb = ReplyKeyboardRemove()
-
-# --- Subscribe Inline Buttons ---
-
+# Клавиатура для подписки
 sub_kb = [
-    [
-        InlineKeyboardButton(text='1 Day: 100K VND', callback_data='sub1day'),
-    ],
-    [
-        InlineKeyboardButton(text='7 Days: 400K VND', callback_data='sub7days'),
-    ],
-    [
-        InlineKeyboardButton(text='1 Month: 1M VND', callback_data='sub1month'),
-    ],
-    [
-        InlineKeyboardButton(text='FOREVER: 10M VND', callback_data='subForever'),
-    ],
+    [InlineKeyboardButton(text='1 Day: 100K VND', callback_data='sub1day')],
+    [InlineKeyboardButton(text='7 Days: 400K VND', callback_data='sub7days')],
+    [InlineKeyboardButton(text='1 Month: 1M VND', callback_data='sub1month')],
+    [InlineKeyboardButton(text='FOREVER: 10M VND', callback_data='subForever')],
+    [InlineKeyboardButton(text='Free Plan: 1 Day (FREE)', callback_data='free_plan')],
 ]
-sub_keyboard = types.InlineKeyboardMarkup(inline_keyboard=sub_kb)
+sub_keyboard = InlineKeyboardMarkup(inline_keyboard=sub_kb)

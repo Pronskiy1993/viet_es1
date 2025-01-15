@@ -1,6 +1,8 @@
 import asyncio
-import os
 import json
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from datetime import datetime, timedelta
 from aiogram import Bot, Dispatcher, types, Router
@@ -13,7 +15,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from common.keyboards import language_kb, create_main_menu, sub_keyboard # Импорт клавиатур
-from database import create_or_update_database, get_subscription, update_subscription  # Импорт работы с БД
+from common.database import create_or_update_database, get_subscription, update_subscription  # Импорт работы с БД
+# Импорт работы с БД
 
 # --- Загружаем переменные окружения ---
 load_dotenv()
